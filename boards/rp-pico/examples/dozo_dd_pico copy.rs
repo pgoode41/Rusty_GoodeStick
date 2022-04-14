@@ -57,8 +57,6 @@ use rp_pico::Pins;
 ///
 /// The function configures the RP2040 peripherals, then echoes any characters
 /// received over USB Serial.
-//#####################################################################################################################//
-//#####################################################################################################################//
 #[entry]
 fn main() -> ! {
     // Grab our singleton objects
@@ -87,6 +85,7 @@ fn main() -> ! {
     let mut delay = cortex_m::delay::Delay::new(core.SYST, clocks.system_clock.freq().integer());
     let mut adc = Adc::new(pac.ADC, &mut pac.RESETS);
     
+
     // Set up the USB driver
     let usb_bus = UsbBusAllocator::new(hal::usb::UsbBus::new(
         pac.USBCTRL_REGS,
@@ -95,6 +94,7 @@ fn main() -> ! {
         true,
         &mut pac.RESETS,
     ));
+
 
     // The single-cycle I/O block controls our GPIO pins
     let sio = hal::Sio::new(pac.SIO);
@@ -107,6 +107,8 @@ fn main() -> ! {
         &mut pac.RESETS,
     );
 
+
+
     // Set up the USB Communications Class Device driver
     let mut serial = SerialPort::new(&usb_bus);
 
@@ -118,20 +120,26 @@ fn main() -> ! {
         .device_class(2) // from: https://www.usb.org/defined-class-codes
         .build();
 
+
     // Configure one of the pins as an ADC input
     let mut adc_pin_0 = pins.gpio26.into_floating_input();
+
     let mut hit_count = 0;
     let mut cycle_count = 0;
+
     let hit_string = "hit";
+
     let nl: String<2> = String::from("\n");
+
     let cycle_count_total = 100;
     let hits_per_cycle_total = 100;
-    let hit_distance_adc_value = 780;
+    let hit_distance_adc_value = 800;
     let mut led_pin = pins.led.into_push_pull_output();
     let mut full_hit_count = 0;
-//#####################################################################################################################//
+
+
     loop {
-//#########################################################################//
+
         if cycle_count >= cycle_count_total {
             hit_count = 0;
         }
@@ -163,7 +171,8 @@ fn main() -> ! {
         
         cycle_count+=cycle_count+1;
         delay.delay_ms(1);
-//#########################################################################//
+        
+
         // Check for new data
         if usb_dev.poll(&mut [&mut serial]) {
             let mut buf = [0u8; 64];
@@ -194,10 +203,7 @@ fn main() -> ! {
             }
         }
     }
-//#####################################################################################################################//
 }
-//#####################################################################################################################//
-//#####################################################################################################################//
 
 
 
