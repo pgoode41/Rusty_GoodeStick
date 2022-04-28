@@ -1,3 +1,4 @@
+
 //! # Pico USB Serial Example
 //!
 //! Creates a USB Serial device on a Pico board, with the USB driver running in
@@ -11,7 +12,7 @@
 
 #![no_std]
 #![no_main]
-
+mod ir_core {
 // The macro for our start-up function
 use cortex_m_rt::entry;
 use heapless::String;
@@ -60,7 +61,7 @@ use rp_pico::Pins;
 //#####################################################################################################################//
 //#####################################################################################################################//
 #[entry]
-fn main() -> ! {
+fn Detect() -> ! {
     // Grab our singleton objects
     let mut pac = pac::Peripherals::take().unwrap();
     let core = pac::CorePeripherals::take().unwrap();
@@ -122,12 +123,11 @@ fn main() -> ! {
     let mut adc_pin_0 = pins.gpio26.into_floating_input();
     let mut hit_count = 0;
     let mut cycle_count = 0;
-    let full_hit_string = "Fhit:";
-    let single_hit_string = "Shit:";
+    let hit_string = "hit";
     let nl: String<2> = String::from("\n");
     let cycle_count_total = 100;
     let hits_per_cycle_total = 100;
-    let hit_distance_adc_value = 900;
+    let hit_distance_adc_value = 780;
     let mut led_pin = pins.led.into_push_pull_output();
     let mut full_hit_count = 0;
 //#####################################################################################################################//
@@ -145,7 +145,7 @@ fn main() -> ! {
             //continue;
             if full_hit_count >= 5 {
                 cycle_count = 0;
-                serial.write(full_hit_string.as_bytes());
+                serial.write(hit_string.as_bytes());
                 serial.write(data.as_bytes());
                 serial.write(nl.as_bytes());
                 hit_count = 0;
@@ -159,9 +159,6 @@ fn main() -> ! {
                 hit_count = 0;
             }
         } else if pin_adc_counts >= hit_distance_adc_value {
-            serial.write(single_hit_string.as_bytes());
-            serial.write(data.as_bytes());
-            serial.write(nl.as_bytes());
             hit_count+=hit_count+1;
         }
         
@@ -202,7 +199,7 @@ fn main() -> ! {
 }
 //#####################################################################################################################//
 //#####################################################################################################################//
-
+}
 
 //usb_devices=($(ls -lah /dev/ttyACM* | awk {'print$10'}))
 //export test_usb=$for i in ${usb_devices[@]};do echo ${i}; done)
