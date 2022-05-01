@@ -126,8 +126,8 @@ fn main() -> ! {
     let single_hit_string = "Shit:";
     let nl: String<2> = String::from("\n");
     let cycle_count_total = 100;
-    let hits_per_cycle_total = 100;
-    let hit_distance_adc_value = 900;
+    let hits_per_cycle_total = 2;
+    let hit_distance_adc_value = 700;
     let mut led_pin = pins.led.into_push_pull_output();
     let mut full_hit_count = 0;
 //#####################################################################################################################//
@@ -185,6 +185,13 @@ fn main() -> ! {
                     });
                     // Send back to the host
                     let mut wr_ptr = &buf[..count];
+
+
+                    let first_char: String<2> = String::from(wr_ptr[1]) ;
+                    serial.write(first_char.as_bytes());
+
+
+
                     while !wr_ptr.is_empty() {
                         match serial.write(wr_ptr) {
                             Ok(len) => wr_ptr = &wr_ptr[len..],
