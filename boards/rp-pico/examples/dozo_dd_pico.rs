@@ -186,12 +186,12 @@ fn main() -> ! {
                     // Send back to the host
                     let mut wr_ptr = &buf[..count];
 
-
+                    // Print the ascii key for a specific value from usb input.
                     let first_char: String<2> = String::from(wr_ptr[1]) ;
                     serial.write(first_char.as_bytes());
 
 
-
+                    // Send USB ascii input string back to console.
                     while !wr_ptr.is_empty() {
                         match serial.write(wr_ptr) {
                             Ok(len) => wr_ptr = &wr_ptr[len..],
