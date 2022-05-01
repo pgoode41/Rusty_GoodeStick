@@ -126,7 +126,7 @@ fn main() -> ! {
     let single_hit_string = "Shit:";
     let nl: String<2> = String::from("\n");
     let cycle_count_total = 100;
-    let hits_per_cycle_total = 2;
+    let hits_per_cycle_total = 1;
     let hit_distance_adc_value = 700;
     let mut led_pin = pins.led.into_push_pull_output();
     let mut full_hit_count = 0;
@@ -143,7 +143,7 @@ fn main() -> ! {
         if hit_count >= hits_per_cycle_total && cycle_count <= cycle_count_total {
             full_hit_count+=full_hit_count+1;
             //continue;
-            if full_hit_count >= 5 {
+            if full_hit_count >= 0 {
                 cycle_count = 0;
                 serial.write(full_hit_string.as_bytes());
                 serial.write(data.as_bytes());
