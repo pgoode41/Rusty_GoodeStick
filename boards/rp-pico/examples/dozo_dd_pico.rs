@@ -127,7 +127,7 @@ fn main() -> ! {
     let nl: String<2> = String::from("\n");
     let cycle_count_total = 100;
     let hits_per_cycle_total = 1;
-    let hit_distance_adc_value = 700;
+    let hit_distance_adc_value = 840;
     let mut led_pin = pins.led.into_push_pull_output();
     let mut full_hit_count = 0;
 //#####################################################################################################################//
@@ -186,21 +186,15 @@ fn main() -> ! {
                     // Send back to the host
                     let mut wr_ptr = &buf[..count];
 
-                    // Print the ascii key for a specific value from usb input.
-                    let first_char: String<2> = String::from(wr_ptr[1]) ;
-                    serial.write(first_char.as_bytes());
+                    //let mut firs_char = buf[0] as char;
+                    //if firs_char  == 'S' {
+                    //    let data_string: String<4> = String::from("First Letter is S \n");
+                    //    serial.write(&[buf[0]]);
+                    //}
 
 
-                    // Send USB ascii input string back to console.
-                    while !wr_ptr.is_empty() {
-                        match serial.write(wr_ptr) {
-                            Ok(len) => wr_ptr = &wr_ptr[len..],
-                            // On error, just drop unwritten data.
-                            // One possible error is Err(WouldBlock), meaning the USB
-                            // write buffer is full.
-                            Err(_) => break,
-                        };
-                    }
+                    serial.write(&[buf[0], buf[1]]);
+                    
                 }
             }
         }
