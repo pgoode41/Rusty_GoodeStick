@@ -114,7 +114,7 @@ fn main() -> ! {
     let mut usb_dev = UsbDeviceBuilder::new(&usb_bus, UsbVidPid(0x16c0, 0x27dd))
         .manufacturer("Dozo")
         .product("GoodeStick")
-        .serial_number("D0")
+        .serial_number("Dozo_DD_0")
         .device_class(2) // from: https://www.usb.org/defined-class-codes
         .build();
 
@@ -125,9 +125,9 @@ fn main() -> ! {
     let full_hit_string = "Fhit:";
     let single_hit_string = "Shit:";
     let nl: String<2> = String::from("\n");
-    let cycle_count_total = 100;
+    let cycle_count_total = 1000;
     let hits_per_cycle_total = 1;
-    let hit_distance_adc_value = 840;
+    let hit_distance_adc_value = 785;
     let mut led_pin = pins.led.into_push_pull_output();
     let mut full_hit_count = 0;
 //#####################################################################################################################//
@@ -166,7 +166,7 @@ fn main() -> ! {
         }
         
         cycle_count+=cycle_count+1;
-        delay.delay_ms(1);
+        //delay.delay_ms(1);
 //#########################################################################//
         // Check for new data
         if usb_dev.poll(&mut [&mut serial]) {
