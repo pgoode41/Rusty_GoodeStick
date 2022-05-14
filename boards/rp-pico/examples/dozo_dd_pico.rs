@@ -122,12 +122,12 @@ fn main() -> ! {
     let mut adc_pin_0 = pins.gpio26.into_floating_input();
     let mut hit_count = 0;
     let mut cycle_count = 0;
-    let full_hit_string = "Fhit:";
+    let full_hit_string = ":full_hit:";
     let single_hit_string = "Shit:";
     let nl: String<2> = String::from("\n");
-    let cycle_count_total = 1000;
+    let cycle_count_total = 10000;
     let hits_per_cycle_total = 1;
-    let hit_distance_adc_value = 785;
+    let hit_distance_adc_value = 876;
     let mut led_pin = pins.led.into_push_pull_output();
     let mut full_hit_count = 0;
 //#####################################################################################################################//
@@ -136,7 +136,6 @@ fn main() -> ! {
         if cycle_count >= cycle_count_total {
             hit_count = 0;
         }
-
         let pin_adc_counts: u32 = adc.read(&mut adc_pin_0).unwrap();
         let data: String<4> = String::from(pin_adc_counts);
 
@@ -147,7 +146,7 @@ fn main() -> ! {
                 cycle_count = 0;
                 serial.write(full_hit_string.as_bytes());
                 serial.write(data.as_bytes());
-                serial.write(nl.as_bytes());
+                //serial.write(nl.as_bytes());
                 hit_count = 0;
                 full_hit_count = 0;
                 led_pin.set_high().unwrap();
@@ -161,12 +160,10 @@ fn main() -> ! {
         } else if pin_adc_counts >= hit_distance_adc_value {
             serial.write(single_hit_string.as_bytes());
             serial.write(data.as_bytes());
-            serial.write(nl.as_bytes());
+            //serial.write(nl.as_bytes());
             hit_count+=hit_count+1;
         }
-        
         cycle_count+=cycle_count+1;
-        //delay.delay_ms(1);
 //#########################################################################//
         // Check for new data
         if usb_dev.poll(&mut [&mut serial]) {
@@ -185,17 +182,31 @@ fn main() -> ! {
                     });
                     // Send back to the host
                     let mut wr_ptr = &buf[..count];
-
+                    while !wr_ptr.is_empty() {
+                        match serial.write(wr_ptr) {
+                            Ok(len) => wr_ptr = &wr_ptr[len..],
+                            // On error, just drop unwritten data.
+                            // One possible error is Err(WouldBlock), meaning the USB
+                            // write buffer is full.
+                            Err(_) => break,
+                        };
+                    }
+                }
+                /*Ok(count) => {
+                    // Convert to upper case
+                    buf.iter_mut().take(count).for_each(|b| {
+                        b.make_ascii_uppercase();
+                    });
+                    // Send back to the host
+                    let mut wr_ptr = &buf[..count];
                     //let mut firs_char = buf[0] as char;
                     //if firs_char  == 'S' {
                     //    let data_string: String<4> = String::from("First Letter is S \n");
                     //    serial.write(&[buf[0]]);
                     //}
-
-
                     serial.write(&[buf[0], buf[1]]);
                     
-                }
+                }*/
             }
         }
     }
