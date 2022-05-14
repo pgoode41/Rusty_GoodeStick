@@ -122,7 +122,7 @@ fn main() -> ! {
     let mut adc_pin_0 = pins.gpio26.into_floating_input();
     let mut hit_count = 0;
     let mut cycle_count = 0;
-    let full_hit_string = ":full_hit:";
+    let full_hit_string = "full_hit:";
     let single_hit_string = "single_hit:";
     let nl: String<2> = String::from("\n");
     let cycle_count_total = 10000;
