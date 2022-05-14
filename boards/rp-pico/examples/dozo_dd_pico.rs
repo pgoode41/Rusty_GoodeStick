@@ -146,7 +146,7 @@ fn main() -> ! {
                 cycle_count = 0;
                 serial.write(full_hit_string.as_bytes());
                 serial.write(data.as_bytes());
-                //serial.write(nl.as_bytes());
+                serial.write(nl.as_bytes());
                 hit_count = 0;
                 full_hit_count = 0;
                 led_pin.set_high().unwrap();
@@ -160,7 +160,7 @@ fn main() -> ! {
         } else if pin_adc_counts >= hit_distance_adc_value {
             serial.write(single_hit_string.as_bytes());
             serial.write(data.as_bytes());
-            //serial.write(nl.as_bytes());
+            serial.write(nl.as_bytes());
             hit_count+=hit_count+1;
         }
         cycle_count+=cycle_count+1;
