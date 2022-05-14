@@ -123,7 +123,7 @@ fn main() -> ! {
     let mut hit_count = 0;
     let mut cycle_count = 0;
     let full_hit_string = ":full_hit:";
-    let single_hit_string = "Shit:";
+    let single_hit_string = "single_hit:";
     let nl: String<2> = String::from("\n");
     let cycle_count_total = 10000;
     let hits_per_cycle_total = 1;
