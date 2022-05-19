@@ -12,6 +12,8 @@
 #![no_std]
 #![no_main]
 
+use core::pin::Pin;
+
 // The macro for our start-up function
 use cortex_m_rt::entry;
 use heapless::String;
@@ -49,6 +51,8 @@ use embedded_hal::adc::OneShot;
 use rp2040_hal::adc::Adc;
 
 use rp_pico::Pins;
+
+use rp2040_hal::{gpio::{bank0::Gpio25, PushPullOutput}, sio::Sio};
 
 /// Entry point to our bare-metal application.
 ///
@@ -117,9 +121,8 @@ fn main() -> ! {
         .serial_number("goodestick_0_device")
         .device_class(2) // from: https://www.usb.org/defined-class-codes
         .build();
-
+        let mut led_pin = pins.led.into_push_pull_output();
         //let big_yee = String::from("BIG YEEEE!!!\n");
-
 //#####################################################################################################################//
     loop {
 //#########################################################################//
@@ -138,63 +141,76 @@ fn main() -> ! {
                         let cmd_data = GoodeStickCommandString {
                             gpio_0_number: String::from(buf[0]+buf[1]),
                             gpio_1_number: String::from(buf[2]+buf[3]),
-                            gpio_2_number: String::from(buf[4]+buf[5]),
-                            gpio_3_number: String::from(buf[6]+buf[7]),
-                            gpio_4_number: String::from(buf[8]+buf[9]),
-                            gpio_5_number: String::from(buf[10]+buf[11]),
                             gpio_0_start_state: String::from(buf[12]),
                             gpio_1_start_state: String::from(buf[13]),
-                            gpio_2_start_state: String::from(buf[14]),
-                            gpio_3_start_state: String::from(buf[15]),
-                            gpio_4_start_state: String::from(buf[16]),
-                            gpio_5_start_state: String::from(buf[17]),
                             gpio_0_active_state: String::from(buf[19]),
                             gpio_1_active_state: String::from(buf[20]),
-                            gpio_2_active_state: String::from(buf[21]),
-                            gpio_3_active_state: String::from(buf[22]),
-                            gpio_4_active_state: String::from(buf[23]),
-                            gpio_5_active_state: String::from(buf[24]),
                             pulse_duration: String::from(buf[25]),
                             time_mode: String::from(buf[26]),
                             program_mode: String::from(buf[27]),
-
                         };
+
+                        //let cmd_string = String::from(cmd_data.gpio_0_number+cmd_data.gpio_1_number);
+                        //serial.write(&cmd_string.as_bytes());
+
+                        fire_pin(&mut led_pin, cmd_data, &mut delay)
+                    
+
+
+
+                        /*
 
                         let gpio_num = cmd_data.gpio_0_number;
                         serial.write(gpio_num.as_bytes());
 
+                        let &mut gpio_0_number_pin: &selected_gpio_pin = match Some(&*gpio_num) {
+                            Some("00") => {
+                                 return selected_gpio_pin::Gpio0(pins.led.into_push_pull_output());
+                            },
+                            _ =>  (),
+                        };
+                        */
+
+
+                        //serial.write(gpio_0_number_pin.as_bytes());
                     }
                 }
             }
         }
+        
     }
 //#####################################################################################################################//
 //#####################################################################################################################//
 //#####################################################################################################################//
-#[derive(Debug)]
+//Pin<Gpio0, Output<PushPull>>
+//#[derive(Debug)]
 struct GoodeStickCommandString {
     gpio_0_number: String<2>,
     gpio_1_number: String<2>,
-    gpio_2_number: String<2>,
-    gpio_3_number: String<2>,
-    gpio_4_number: String<2>,
-    gpio_5_number: String<2>,
     gpio_0_start_state: String<1>,
     gpio_1_start_state: String<1>,
-    gpio_2_start_state: String<1>,
-    gpio_3_start_state: String<1>,
-    gpio_4_start_state: String<1>,
-    gpio_5_start_state: String<1>,
     gpio_0_active_state: String<1>,
     gpio_1_active_state: String<1>,
-    gpio_2_active_state: String<1>,
-    gpio_3_active_state: String<1>,
-    gpio_4_active_state: String<1>,
-    gpio_5_active_state: String<1>,
     pulse_duration:String<1>,
     time_mode:String<1>,
     program_mode:String<1>,
 }
+
+
+fn fire_pin(led_pin: &mut rp2040_hal::gpio::Pin<Gpio25, PushPullOutput>, cmd_data: GoodeStickCommandString, delay: &mut Delay) {
+    let cmd_0 = cmd_data;
+    //let mut pin = led_pin;
+    led_pin.set_high().unwrap();
+    delay.delay_ms(500);
+    led_pin.set_low().unwrap();
+    delay.delay_ms(500);
+}
+/* 
+#[derive(Debug)]
+enum selected_gpio_pin {
+    Gpio0(rp2040_hal::gpio::Pin<Gpio25, PushPullOutput>),
+}
+*/
 //fn fire_pin(gpioPing)
 
 //usb_devices=($(ls -lah /dev/ttyACM* | awk {'print$10'}))
