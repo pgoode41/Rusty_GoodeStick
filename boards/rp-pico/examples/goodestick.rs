@@ -118,7 +118,7 @@ fn main() -> ! {
     let mut usb_dev = UsbDeviceBuilder::new(&usb_bus, UsbVidPid(0x16c0, 0x27dd))
         .manufacturer("Dozo")
         .product("GoodeStick")
-        .serial_number("goodestick_0_device")
+        .serial_number("goodestick_test_device")
         .device_class(2) // from: https://www.usb.org/defined-class-codes
         .build();
         let mut led_pin = pins.led.into_push_pull_output();
@@ -153,26 +153,24 @@ fn main() -> ! {
                         //let cmd_string = String::from(cmd_data.gpio_0_number+cmd_data.gpio_1_number);
                         //serial.write(&cmd_string.as_bytes());
 
-                        fire_pin(&mut led_pin, cmd_data, &mut delay)
+                        serial.write(cmd_data.gpio_0_number.as_bytes());
+
+                        fire_pin(&mut led_pin, cmd_data, &mut delay);
                     
-
-
-
-                        /*
-
-                        let gpio_num = cmd_data.gpio_0_number;
-                        serial.write(gpio_num.as_bytes());
-
-                        let &mut gpio_0_number_pin: &selected_gpio_pin = match Some(&*gpio_num) {
-                            Some("00") => {
-                                 return selected_gpio_pin::Gpio0(pins.led.into_push_pull_output());
-                            },
-                            _ =>  (),
-                        };
-                        */
-
-
-                        //serial.write(gpio_0_number_pin.as_bytes());
+                        buf.iter_mut().take(count).for_each(|b| {
+                            b.make_ascii_uppercase();
+                        });
+                        // Send back to the host
+                        let mut wr_ptr = &buf[..count];
+                        while !wr_ptr.is_empty() {
+                            match serial.write(wr_ptr) {
+                                Ok(len) => wr_ptr = &wr_ptr[len..],
+                                // On error, just drop unwritten data.
+                                // One possible error is Err(WouldBlock), meaning the USB
+                                // write buffer is full.
+                                Err(_) => break,
+                            };
+                        }
                     }
                 }
             }
