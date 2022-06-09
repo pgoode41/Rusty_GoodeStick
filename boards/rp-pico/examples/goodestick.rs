@@ -16,6 +16,7 @@ use core::pin::Pin;
 
 // The macro for our start-up function
 use cortex_m_rt::entry;
+use hal::gpio::bank0::Gpio0;
 use heapless::String;
 use cortex_m::delay::Delay;
 
@@ -121,8 +122,9 @@ fn main() -> ! {
         .serial_number("goodestick_test_device")
         .device_class(2) // from: https://www.usb.org/defined-class-codes
         .build();
-        let mut led_pin = pins.led.into_push_pull_output();
         //let big_yee = String::from("BIG YEEEE!!!\n");
+        let mut gpio_pin_0 = pins.gpio0.into_push_pull_output();
+        let mut gpio_pin_1 = pins.gpio1.into_push_pull_output();
 //#####################################################################################################################//
     loop {
 //#########################################################################//
@@ -137,6 +139,7 @@ fn main() -> ! {
                     // Do nothing
                 }
                 Ok(count) => {
+
      
                         let cmd_data = GoodeStickCommandString {
                             gpio_0_number: String::from(buf[0]+buf[1]),
@@ -150,12 +153,30 @@ fn main() -> ! {
                             program_mode: String::from(buf[27]),
                         };
 
+                        match Some(&*cmd_data.gpio_0_number) {
+                            Some("00") => {
+                                let cmd_0 = &cmd_data;
+                                //let mut pin = gpio_pin;
+                                gpio_pin_0.set_high().unwrap();
+                                delay.delay_ms(500);
+                                gpio_pin_0.set_low().unwrap();
+                                delay.delay_ms(500);
+                            },
+                            Some("01") => {
+                                let cmd_0 = &cmd_data;
+                                //let mut pin = gpio_pin;
+                                gpio_pin_1.set_high().unwrap();
+                                delay.delay_ms(500);
+                                gpio_pin_1.set_low().unwrap();
+                                delay.delay_ms(500);
+                            },
+                            _ => ()
+                        }
+
                         //let cmd_string = String::from(cmd_data.gpio_0_number+cmd_data.gpio_1_number);
                         //serial.write(&cmd_string.as_bytes());
 
-                        serial.write(cmd_data.gpio_0_number.as_bytes());
-
-                        fire_pin(&mut led_pin, cmd_data, &mut delay);
+                        serial.write(&cmd_data.gpio_0_number.as_bytes());
                     
                         buf.iter_mut().take(count).for_each(|b| {
                             b.make_ascii_uppercase();
@@ -182,6 +203,7 @@ fn main() -> ! {
 //#####################################################################################################################//
 //Pin<Gpio0, Output<PushPull>>
 //#[derive(Debug)]
+
 struct GoodeStickCommandString {
     gpio_0_number: String<2>,
     gpio_1_number: String<2>,
@@ -194,22 +216,44 @@ struct GoodeStickCommandString {
     program_mode:String<1>,
 }
 
-
-fn fire_pin(led_pin: &mut rp2040_hal::gpio::Pin<Gpio25, PushPullOutput>, cmd_data: GoodeStickCommandString, delay: &mut Delay) {
+/* 
+fn gpio_0_fire_pin(cmd_data: GoodeStickCommandString, delay: &mut Delay, pins: Pins) {
+    let mut gpio_pin = pins.gpio0.into_push_pull_output();
     let cmd_0 = cmd_data;
-    //let mut pin = led_pin;
-    led_pin.set_high().unwrap();
+    //let mut pin = gpio_pin;
+    gpio_pin.set_high().unwrap();
     delay.delay_ms(500);
-    led_pin.set_low().unwrap();
+    gpio_pin.set_low().unwrap();
     delay.delay_ms(500);
 }
-/* 
+
+fn gpio_1_fire_pin(cmd_data: GoodeStickCommandString, delay: &mut Delay, pins: Pins) {
+    let mut gpio_pin = pins.gpio1.into_push_pull_output();
+    let cmd_0 = cmd_data;
+    //let mut pin = gpio_pin;
+    gpio_pin.set_high().unwrap();
+    delay.delay_ms(500);
+    gpio_pin.set_low().unwrap();
+    delay.delay_ms(500);
+}
+
+fn gpio_2_fire_pin(cmd_data: GoodeStickCommandString, delay: &mut Delay, pins: Pins) {
+    let mut gpio_pin = pins.gpio2.into_push_pull_output();
+    let cmd_0 = cmd_data;
+    //let mut pin = gpio_pin;
+    gpio_pin.set_high().unwrap();
+    delay.delay_ms(500);
+    gpio_pin.set_low().unwrap();
+    delay.delay_ms(500);
+}
+
+
 #[derive(Debug)]
 enum selected_gpio_pin {
     Gpio0(rp2040_hal::gpio::Pin<Gpio25, PushPullOutput>),
 }
 */
-//fn fire_pin(gpioPing)
+//fn gpio_25_fire_pin(gpioPing)
 
 //usb_devices=($(ls -lah /dev/ttyACM* | awk {'print$10'}))
 //export test_usb=$for i in ${usb_devices[@]};do echo ${i}; done)
