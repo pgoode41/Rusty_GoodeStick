@@ -55,6 +55,8 @@ use rp_pico::Pins;
 
 use rp2040_hal::{gpio::{bank0::Gpio25, PushPullOutput}, sio::Sio};
 
+
+
 /// Entry point to our bare-metal application.
 ///
 /// The `#[entry]` macro ensures the Cortex-M start-up code calls this function
@@ -139,19 +141,133 @@ fn main() -> ! {
                     // Do nothing
                 }
                 Ok(count) => {
+                    // Convert to upper case
+                    buf.iter_mut().take(count).for_each(|b| {
+                        b.make_ascii_uppercase();
+                    });
+                    // Send back to the host
+                    //let mut wr_ptr = &buf[..count];
+                    let mut wr_ptr = &buf[0..2];
+                    let thing = wr_ptr[0].to_ascii_lowercase();
 
-     
-                        let cmd_data = GoodeStickCommandString {
-                            gpio_0_number: String::from(buf[0]+buf[1]),
-                            gpio_1_number: String::from(buf[2]+buf[3]),
-                            gpio_0_start_state: String::from(buf[12]),
-                            gpio_1_start_state: String::from(buf[13]),
-                            gpio_0_active_state: String::from(buf[19]),
-                            gpio_1_active_state: String::from(buf[20]),
-                            pulse_duration: String::from(buf[25]),
-                            time_mode: String::from(buf[26]),
-                            program_mode: String::from(buf[27]),
+
+                    /*
+                    if thing == 0 {
+                        serial.write("YEEE".as_bytes());
+                        serial.write(&[thing]);
+                    } else {
+                        serial.write("NOOO".as_bytes());
+                        serial.write(&[thing]);
+                    }
+
+                    serial.write(&[wr_ptr[0]]);
+                    serial.write(&[wr_ptr[1]]);
+                    */
+
+                    //serial.write(0.as_bytes());
+                    serial.write(&[thing]);
+                    let zero = 0_u8.to_ascii_lowercase();
+                    let one = 1_u8.to_ascii_lowercase();
+                    
+
+                    match thing {
+                        zero => {
+                            serial.write("ZERO".as_bytes());
+                            serial.write(&[thing]);
+                        }
+                        one => {
+                            serial.write("ONE".as_bytes());
+                            serial.write(&[thing]);
+                        }
+
+                        _ => ()
+                    }
+                    //serial.write(nl.as_bytes());
+
+                    /*
+
+                    while !wr_ptr.is_empty() {
+                        match serial.write(wr_ptr) {
+                            Ok(len) => {
+                                wr_ptr = &wr_ptr[len..]
+                                
+                                //wr_ptr = &wr_ptr[0..1]
+                                
+                            }
+                            // On error, just drop unwritten data.
+                            // One possible error is Err(WouldBlock), meaning the USB
+                            // write buffer is full.
+                            Err(_) => break,
                         };
+                    }
+                    */
+                }
+            }
+        }
+        /* 
+        // Check for new data
+        if usb_dev.poll(&mut [&mut serial]) {
+            let mut buf = [0u8; 64];
+            match serial.read(&mut buf) {
+                Err(_e) => {
+                    // Do nothing
+                }
+                Ok(0) => {
+                    // Do nothing
+                }
+                Ok(count) => {
+
+                        //let cmd_string = String::from(cmd_data.gpio_0_number+cmd_data.gpio_1_number);
+                        //serial.write(&cmd_string.as_bytes());
+                        
+
+                        //serial.write(&cmd_data.gpio_0_number.as_bytes());
+                        let nl: String<2> = String::from("\n");
+                        let yee: String<2> = String::from("YEEE!!!!!!!!!\n");
+                        buf.iter_mut().take(count).for_each(|b| {
+                            b.make_ascii_uppercase();
+                        });
+                        // Send back to the host
+                        let mut wr_ptr = &buf[..count];
+                        let thingy = wr_ptr;
+                        serial.write(yee.as_bytes());
+
+                        serial.write(&[thingy[0]]);
+                        serial.write(nl.as_bytes());
+                        serial.write(nl.as_bytes());
+                        serial.write(nl.as_bytes());
+                        serial.write(nl.as_bytes());
+                        
+                        
+                        while !wr_ptr.is_empty() {
+                            match serial.write(wr_ptr) {
+                                Ok(len) => wr_ptr = &wr_ptr[0..1],
+                                // On error, just drop unwritten data.
+                                // One possible error is Err(WouldBlock), meaning the USB
+                                // write buffer is full.
+                                Err(_) => break,
+                            };
+                        }
+                        
+
+                        //serial.write(&wr_ptr[0..1]);
+                        //}
+                        //serial.write(wr_ptr);
+
+                        //
+                        
+                        let cmd_data = GoodeStickCommandString {
+                            gpio_0_number: &buf[0..1],
+                            gpio_1_number: String::from(&buf[2..3]),
+                            gpio_0_start_state: String::from(&buf[4]),
+                            gpio_1_start_state: String::from(wr_ptr[5]),
+                            gpio_0_active_state: String::from(wr_ptr[6]),
+                            gpio_1_active_state: String::from(wr_ptr[7]),
+                            pulse_duration: String::from(wr_ptr[8]+wr_ptr[9]+wr_ptr[10]+wr_ptr[11]),
+                            time_mode: String::from(wr_ptr[12]),
+                            program_mode: String::from(wr_ptr[13]),
+                        };
+                        //serial.write(&cmd_data.gpio_0_number.as_bytes());
 
                         match Some(&*cmd_data.gpio_0_number) {
                             Some("00") => {
@@ -172,17 +288,9 @@ fn main() -> ! {
                             },
                             _ => ()
                         }
+                        
+                        
 
-                        //let cmd_string = String::from(cmd_data.gpio_0_number+cmd_data.gpio_1_number);
-                        //serial.write(&cmd_string.as_bytes());
-
-                        serial.write(&cmd_data.gpio_0_number.as_bytes());
-                    
-                        buf.iter_mut().take(count).for_each(|b| {
-                            b.make_ascii_uppercase();
-                        });
-                        // Send back to the host
-                        let mut wr_ptr = &buf[..count];
                         while !wr_ptr.is_empty() {
                             match serial.write(wr_ptr) {
                                 Ok(len) => wr_ptr = &wr_ptr[len..],
@@ -192,9 +300,10 @@ fn main() -> ! {
                                 Err(_) => break,
                             };
                         }
+                        //
                     }
                 }
-            }
+            }*/
         }
         
     }
@@ -216,7 +325,7 @@ struct GoodeStickCommandString {
     program_mode:String<1>,
 }
 
-/* 
+
 fn gpio_0_fire_pin(cmd_data: GoodeStickCommandString, delay: &mut Delay, pins: Pins) {
     let mut gpio_pin = pins.gpio0.into_push_pull_output();
     let cmd_0 = cmd_data;
@@ -247,12 +356,13 @@ fn gpio_2_fire_pin(cmd_data: GoodeStickCommandString, delay: &mut Delay, pins: P
     delay.delay_ms(500);
 }
 
-
+/*
 #[derive(Debug)]
 enum selected_gpio_pin {
     Gpio0(rp2040_hal::gpio::Pin<Gpio25, PushPullOutput>),
 }
 */
+
 //fn gpio_25_fire_pin(gpioPing)
 
 //usb_devices=($(ls -lah /dev/ttyACM* | awk {'print$10'}))
