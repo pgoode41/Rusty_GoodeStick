@@ -175,8 +175,25 @@ fn main() -> ! {
                     //serial.write("YEEE".as_bytes());
                     //serial.write(wr_ptr);
 
+                    
+                    
                     for x in 0..wr_ptr.len() {
-                        let val = ascii_decode_base_10(wr_ptr[x]);
+                        let count:[u8; 10] = [0,1,2,3,4,5,6,7,8,9];
+                        /* 
+                        //let count:u8 = x.try_into().unwrap();
+                        serial.write("\n".as_bytes());
+                        serial.write("Input VAL: ".as_bytes());
+                        serial.write(&[wr_ptr[x]]);
+                        serial.write("\n".as_bytes());
+                        */
+
+                        serial.write("\n".as_bytes());
+                        serial.write("Input IDX: ".as_bytes());
+                        serial.write(&[count[x]]);
+                        serial.write("\n".as_bytes());
+
+                        //let val = ascii_decode_base_10(wr_ptr[x]);
+                        let val = wr_ptr[x];
                         if val == 11 {
                             serial.write("\n".as_bytes());
                             serial.write("Bad Val: ".as_bytes());
@@ -184,85 +201,65 @@ fn main() -> ! {
                             serial.write("\n".as_bytes());
                             continue;
                         };
-                        match x as u8 {
+                        match count[x] {
                             0 => {
-                                serial.write(&[val]);
                                 cmd.start_bit[0] = val; 
                             },
                             1 => {
-                                serial.write(&[val]);
                                 cmd.gpio_0_number[0] = val; 
                             },
                             2 => {
-                                serial.write(&[val]);
                                 cmd.gpio_0_number[1] = val; 
                             },
                             3 => {
-                                serial.write(&[val]);
                                 cmd.gpio_1_number[0] = val; 
                             },
                             4 => {
-                                serial.write(&[val]);
                                 cmd.gpio_1_number[1] = val; 
                             },
                             5 => {
-                                serial.write(&[val]);
                                 cmd.gpio_2_number[0] = val; 
                             },
                             6 => {
-                                serial.write(&[val]);
                                 cmd.gpio_2_number[1] = val; 
                             },
                             7 => {
-                                serial.write(&[val]);
                                 cmd.gpio_0_start_state[0] = val; 
                             },
                             8 => {
-                                serial.write(&[val]);
                                 cmd.gpio_1_start_state[0] = val; 
                             },
                             9 => {
-                                serial.write(&[val]);
                                 cmd.gpio_2_start_state[0] = val; 
                             },
                             10 => {
-                                serial.write(&[val]);
                                 cmd.gpio_0_active_state[0] = val; 
                             },
                             11 => {
-                                serial.write(&[val]);
                                 cmd.gpio_1_active_state[0] = val; 
                             },
                             12 => {
-                                serial.write(&[val]);
                                 cmd.gpio_2_active_state[0] = val; 
                             },
                             13 => {
-                                serial.write(&[val]);
                                 cmd.pulse_duration[0] = val; 
                             },
                             14 => {
-                                serial.write(&[val]);
                                 cmd.pulse_duration[1] = val; 
                             },
                             15 => {
-                                serial.write(&[val]);
                                 cmd.pulse_duration[2] = val; 
                             },
                             16 => {
-                                serial.write(&[val]);
                                 cmd.pulse_duration[3] = val; 
                             },
                             17 => {
-                                serial.write(&[val]);
                                 cmd.time_mode[0] = val; 
                             },
                             18 => {
-                                serial.write(&[val]);
                                 cmd.program_mode[0] = val; 
                             },
                             19 => {
-                                serial.write(&[val]);
                                 cmd.stop_bit[0] = val; 
                             },
                             _ => ()
@@ -305,8 +302,7 @@ fn main() -> ! {
             }
         }
     }
-        
-    }
+} 
 //#####################################################################################################################//
 //#####################################################################################################################//
 //#####################################################################################################################//
