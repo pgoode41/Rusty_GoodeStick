@@ -13,7 +13,9 @@
 #![no_main]
 
 use core::pin::Pin;
+use core::convert::TryInto;
 
+//use alloc::string::ToString;
 // The macro for our start-up function
 use cortex_m_rt::entry;
 use hal::gpio::bank0::Gpio0;
@@ -141,170 +143,168 @@ fn main() -> ! {
                     // Do nothing
                 }
                 Ok(count) => {
+                    let mut cmd: GoodeStickCommandString = {
+                        GoodeStickCommandString { 
+                            start_bit: [0],
+                            gpio_0_number: [0,0],
+                            gpio_1_number: [0,0],
+                            gpio_2_number: [0,0],
+                            gpio_0_start_state: [0],
+                            gpio_1_start_state: [0],
+                            gpio_2_start_state: [0],
+                            gpio_0_active_state: [0],
+                            gpio_1_active_state: [0],
+                            gpio_2_active_state: [0],
+                            pulse_duration: [0,0,0,0],
+                            time_mode: [0],
+                            program_mode: [0],
+                            stop_bit: [0],
+                        }
+                    };
                     // Convert to upper case
                     buf.iter_mut().take(count).for_each(|b| {
                         b.make_ascii_uppercase();
                     });
                     // Send back to the host
-                    //let mut wr_ptr = &buf[..count];
-                    let mut wr_ptr = &buf[0..2];
-                    let thing = wr_ptr[0].to_ascii_lowercase();
+                    let mut wr_ptr = &buf[..count];
+                    //let mut wr_ptr = &buf[0..2];
+                    //let mut thing: i32 = wr_ptr[0].into();
+                    let mut thing = wr_ptr[1];
+                    let thing:i32 = thing.into();
 
+                    //serial.write("YEEE".as_bytes());
+                    //serial.write(wr_ptr);
 
-                    /*
-                    if thing == 0 {
-                        serial.write("YEEE".as_bytes());
-                        serial.write(&[thing]);
-                    } else {
-                        serial.write("NOOO".as_bytes());
-                        serial.write(&[thing]);
-                    }
-
-                    serial.write(&[wr_ptr[0]]);
-                    serial.write(&[wr_ptr[1]]);
-                    */
-
-                    //serial.write(0.as_bytes());
-                    serial.write(&[thing]);
-                    let zero = 0_u8.to_ascii_lowercase();
-                    let one = 1_u8.to_ascii_lowercase();
-                    
-
-                    match thing {
-                        zero => {
-                            serial.write("ZERO".as_bytes());
-                            serial.write(&[thing]);
-                        }
-                        one => {
-                            serial.write("ONE".as_bytes());
-                            serial.write(&[thing]);
-                        }
-
-                        _ => ()
-                    }
-                    //serial.write(nl.as_bytes());
-
-                    /*
-
-                    while !wr_ptr.is_empty() {
-                        match serial.write(wr_ptr) {
-                            Ok(len) => {
-                                wr_ptr = &wr_ptr[len..]
-                                
-                                //wr_ptr = &wr_ptr[0..1]
-                                
-                            }
-                            // On error, just drop unwritten data.
-                            // One possible error is Err(WouldBlock), meaning the USB
-                            // write buffer is full.
-                            Err(_) => break,
+                    for x in 0..wr_ptr.len() {
+                        let val = ascii_decode_base_10(wr_ptr[x]);
+                        if val == 11 {
+                            serial.write("\n".as_bytes());
+                            serial.write("Bad Val: ".as_bytes());
+                            serial.write(&[val]);
+                            serial.write("\n".as_bytes());
+                            continue;
                         };
-                    }
-                    */
-                }
-            }
-        }
-        /* 
-        // Check for new data
-        if usb_dev.poll(&mut [&mut serial]) {
-            let mut buf = [0u8; 64];
-            match serial.read(&mut buf) {
-                Err(_e) => {
-                    // Do nothing
-                }
-                Ok(0) => {
-                    // Do nothing
-                }
-                Ok(count) => {
-
-                        //let cmd_string = String::from(cmd_data.gpio_0_number+cmd_data.gpio_1_number);
-                        //serial.write(&cmd_string.as_bytes());
-                        
-
-                        //serial.write(&cmd_data.gpio_0_number.as_bytes());
-                        let nl: String<2> = String::from("\n");
-                        let yee: String<2> = String::from("YEEE!!!!!!!!!\n");
-                        buf.iter_mut().take(count).for_each(|b| {
-                            b.make_ascii_uppercase();
-                        });
-                        // Send back to the host
-                        let mut wr_ptr = &buf[..count];
-                        let thingy = wr_ptr;
-                        serial.write(yee.as_bytes());
-
-                        serial.write(&[thingy[0]]);
-                        serial.write(nl.as_bytes());
-                        serial.write(nl.as_bytes());
-                        serial.write(nl.as_bytes());
-                        serial.write(nl.as_bytes());
-                        
-                        
-                        while !wr_ptr.is_empty() {
-                            match serial.write(wr_ptr) {
-                                Ok(len) => wr_ptr = &wr_ptr[0..1],
-                                // On error, just drop unwritten data.
-                                // One possible error is Err(WouldBlock), meaning the USB
-                                // write buffer is full.
-                                Err(_) => break,
-                            };
-                        }
-                        
-
-                        //serial.write(&wr_ptr[0..1]);
-                        //}
-                        //serial.write(wr_ptr);
-
-                        //
-                        
-                        let cmd_data = GoodeStickCommandString {
-                            gpio_0_number: &buf[0..1],
-                            gpio_1_number: String::from(&buf[2..3]),
-                            gpio_0_start_state: String::from(&buf[4]),
-                            gpio_1_start_state: String::from(wr_ptr[5]),
-                            gpio_0_active_state: String::from(wr_ptr[6]),
-                            gpio_1_active_state: String::from(wr_ptr[7]),
-                            pulse_duration: String::from(wr_ptr[8]+wr_ptr[9]+wr_ptr[10]+wr_ptr[11]),
-                            time_mode: String::from(wr_ptr[12]),
-                            program_mode: String::from(wr_ptr[13]),
-                        };
-                        //serial.write(&cmd_data.gpio_0_number.as_bytes());
-
-                        match Some(&*cmd_data.gpio_0_number) {
-                            Some("00") => {
-                                let cmd_0 = &cmd_data;
-                                //let mut pin = gpio_pin;
-                                gpio_pin_0.set_high().unwrap();
-                                delay.delay_ms(500);
-                                gpio_pin_0.set_low().unwrap();
-                                delay.delay_ms(500);
+                        match x as u8 {
+                            0 => {
+                                serial.write(&[val]);
+                                cmd.start_bit[0] = val; 
                             },
-                            Some("01") => {
-                                let cmd_0 = &cmd_data;
-                                //let mut pin = gpio_pin;
-                                gpio_pin_1.set_high().unwrap();
-                                delay.delay_ms(500);
-                                gpio_pin_1.set_low().unwrap();
-                                delay.delay_ms(500);
+                            1 => {
+                                serial.write(&[val]);
+                                cmd.gpio_0_number[0] = val; 
+                            },
+                            2 => {
+                                serial.write(&[val]);
+                                cmd.gpio_0_number[1] = val; 
+                            },
+                            3 => {
+                                serial.write(&[val]);
+                                cmd.gpio_1_number[0] = val; 
+                            },
+                            4 => {
+                                serial.write(&[val]);
+                                cmd.gpio_1_number[1] = val; 
+                            },
+                            5 => {
+                                serial.write(&[val]);
+                                cmd.gpio_2_number[0] = val; 
+                            },
+                            6 => {
+                                serial.write(&[val]);
+                                cmd.gpio_2_number[1] = val; 
+                            },
+                            7 => {
+                                serial.write(&[val]);
+                                cmd.gpio_0_start_state[0] = val; 
+                            },
+                            8 => {
+                                serial.write(&[val]);
+                                cmd.gpio_1_start_state[0] = val; 
+                            },
+                            9 => {
+                                serial.write(&[val]);
+                                cmd.gpio_2_start_state[0] = val; 
+                            },
+                            10 => {
+                                serial.write(&[val]);
+                                cmd.gpio_0_active_state[0] = val; 
+                            },
+                            11 => {
+                                serial.write(&[val]);
+                                cmd.gpio_1_active_state[0] = val; 
+                            },
+                            12 => {
+                                serial.write(&[val]);
+                                cmd.gpio_2_active_state[0] = val; 
+                            },
+                            13 => {
+                                serial.write(&[val]);
+                                cmd.pulse_duration[0] = val; 
+                            },
+                            14 => {
+                                serial.write(&[val]);
+                                cmd.pulse_duration[1] = val; 
+                            },
+                            15 => {
+                                serial.write(&[val]);
+                                cmd.pulse_duration[2] = val; 
+                            },
+                            16 => {
+                                serial.write(&[val]);
+                                cmd.pulse_duration[3] = val; 
+                            },
+                            17 => {
+                                serial.write(&[val]);
+                                cmd.time_mode[0] = val; 
+                            },
+                            18 => {
+                                serial.write(&[val]);
+                                cmd.program_mode[0] = val; 
+                            },
+                            19 => {
+                                serial.write(&[val]);
+                                cmd.stop_bit[0] = val; 
                             },
                             _ => ()
                         }
-                        
-                        
-
-                        while !wr_ptr.is_empty() {
-                            match serial.write(wr_ptr) {
-                                Ok(len) => wr_ptr = &wr_ptr[len..],
-                                // On error, just drop unwritten data.
-                                // One possible error is Err(WouldBlock), meaning the USB
-                                // write buffer is full.
-                                Err(_) => break,
-                            };
-                        }
-                        //
                     }
+                    /*
+                    //serial.write(&[cmd.start_bit[0]].as_bytes());
+                    serial.write(&[cmd.start_bit[0]]);
+                    serial.write("\n".as_bytes());
+                    serial.write(&[cmd.gpio_0_number[0], cmd.gpio_0_number[1]]);
+                    serial.write("\n".as_bytes());
+                    serial.write(&[cmd.gpio_1_number[0], cmd.gpio_1_number[1]]);
+                    serial.write("\n".as_bytes());
+                    serial.write(&[cmd.gpio_2_number[0], cmd.gpio_1_number[1]]);
+                    serial.write("\n".as_bytes());
+                    serial.write(&[cmd.gpio_0_start_state[0]]);
+                    serial.write("\n".as_bytes());
+                    serial.write(&[cmd.gpio_1_start_state[0]]);
+                    serial.write("\n".as_bytes());
+                    serial.write(&[cmd.gpio_2_start_state[0]]);
+                    serial.write("\n".as_bytes());
+                    serial.write(&[cmd.gpio_0_active_state[0]]);
+                    serial.write("\n".as_bytes());
+                    serial.write(&[cmd.gpio_1_active_state[0]]);
+                    serial.write("\n".as_bytes());
+                    serial.write(&[cmd.gpio_2_active_state[0]]);
+                    serial.write("\n".as_bytes());
+                    serial.write(&[cmd.pulse_duration[0], cmd.pulse_duration[1], cmd.pulse_duration[2], cmd.pulse_duration[3]]);
+                    serial.write("\n".as_bytes());
+                    serial.write(&[cmd.time_mode[0]]);
+                    serial.write("\n".as_bytes());
+                    serial.write(&[cmd.program_mode[0]]);
+                    serial.write("\n".as_bytes());
+                    serial.write(&[cmd.stop_bit[0]]);
+                    serial.write("\n".as_bytes());
+                    */
+
+
                 }
-            }*/
+            }
         }
+    }
         
     }
 //#####################################################################################################################//
@@ -314,15 +314,56 @@ fn main() -> ! {
 //#[derive(Debug)]
 
 struct GoodeStickCommandString {
-    gpio_0_number: String<2>,
-    gpio_1_number: String<2>,
-    gpio_0_start_state: String<1>,
-    gpio_1_start_state: String<1>,
-    gpio_0_active_state: String<1>,
-    gpio_1_active_state: String<1>,
-    pulse_duration:String<1>,
-    time_mode:String<1>,
-    program_mode:String<1>,
+    start_bit: [u8;1],
+    gpio_0_number: [u8;2],
+    gpio_1_number: [u8;2],
+    gpio_2_number: [u8;2],
+    gpio_0_start_state: [u8;1],
+    gpio_1_start_state: [u8;1],
+    gpio_2_start_state: [u8;1],
+    gpio_0_active_state: [u8;1],
+    gpio_1_active_state: [u8;1],
+    gpio_2_active_state: [u8;1],
+    pulse_duration:[u8;4],
+    time_mode:[u8;1],
+    program_mode:[u8;1],
+    stop_bit: [u8;1],
+}
+
+fn ascii_decode_base_10(idx: u8) -> u8 {
+    match idx as u8 {
+        48 => {
+            return 0;
+        },
+        49 => {
+            return 1;
+        },
+        50 => {
+            return 2;
+        }
+        51 => {
+            return 3;
+        }
+        52 => {
+            return 4;
+        }
+        53 => {
+            return 5;
+        }
+        54 => {
+            return 6;
+        }
+        55 => {
+            return 7;
+        }
+        56 => {
+            return 8;
+        }
+        57 => {
+            return 9;
+        }
+        _ => 11,
+    }
 }
 
 
@@ -355,15 +396,3 @@ fn gpio_2_fire_pin(cmd_data: GoodeStickCommandString, delay: &mut Delay, pins: P
     gpio_pin.set_low().unwrap();
     delay.delay_ms(500);
 }
-
-/*
-#[derive(Debug)]
-enum selected_gpio_pin {
-    Gpio0(rp2040_hal::gpio::Pin<Gpio25, PushPullOutput>),
-}
-*/
-
-//fn gpio_25_fire_pin(gpioPing)
-
-//usb_devices=($(ls -lah /dev/ttyACM* | awk {'print$10'}))
-//export test_usb=$for i in ${usb_devices[@]};do echo ${i}; done)

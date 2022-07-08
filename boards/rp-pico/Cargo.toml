@@ -20,6 +20,7 @@ usb-device= "0.2.8"
 usbd-serial = "0.1.1"
 usbd-hid = "0.5.1"
 futures = { version = "0.3", default-features = false, optional = true }
+cortex-m-semihosting = "0.5.0"
 
 [dev-dependencies]
 panic-halt= "0.2.0"
