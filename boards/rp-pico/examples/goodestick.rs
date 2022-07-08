@@ -162,34 +162,125 @@ fn main() -> ! {
                         }
                     };
                     // Convert to upper case
+                    /*
                     buf.iter_mut().take(count).for_each(|b| {
                         b.make_ascii_uppercase();
                     });
+                    */
                     // Send back to the host
                     let mut wr_ptr = &buf[..count];
-                    //let mut wr_ptr = &buf[0..2];
-                    //let mut thing: i32 = wr_ptr[0].into();
-                    let mut thing = wr_ptr[1];
-                    let thing:i32 = thing.into();
 
-                    //serial.write("YEEE".as_bytes());
-                    //serial.write(wr_ptr);
+            while !wr_ptr.is_empty() {
+
+                //match serial.write(wr_ptr) {
+                //    Ok(len) => {
+                 //       wr_ptr = &wr_ptr[len..];
+
+                    
+
+                    serial.write("\n".as_bytes());
+                    //serial.write("COUNT: ".as_bytes());
+                    serial.write(&[wr_ptr.len()as u8]);
+                    serial.write(&[wr_ptr.len()as u8]);
+                    serial.write(&[wr_ptr.len()as u8]);
+                    serial.write(&[wr_ptr.len()as u8]);
+                    serial.write(&[wr_ptr.len()as u8]);
+                    serial.write(&[wr_ptr.len()as u8]);
+                    serial.write(&[wr_ptr.len()as u8]);
+                    serial.write(&[wr_ptr.len()as u8]);
+                    serial.write(&[wr_ptr.len()as u8]);
+                    serial.write(&[wr_ptr.len()as u8]);
+                    serial.write(&[wr_ptr.len()as u8]);
+                    serial.write(&[wr_ptr.len()as u8]);
+                    serial.write(&[wr_ptr.len()as u8]);
+                    serial.write(&[wr_ptr.len()as u8]);
+                    
+                    serial.write("\n".as_bytes());
 
                     
                     
-                    for x in 0..wr_ptr.len() {
-                        let count:[u8; 10] = [0,1,2,3,4,5,6,7,8,9];
-                        /* 
+                    for x in 0..19 {
                         //let count:u8 = x.try_into().unwrap();
-                        serial.write("\n".as_bytes());
-                        serial.write("Input VAL: ".as_bytes());
-                        serial.write(&[wr_ptr[x]]);
-                        serial.write("\n".as_bytes());
-                        */
+                        if x == 0 {
+                            serial.write("\n".as_bytes());
+                            serial.write("0 HIT".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("Input VAL: ".as_bytes());
+                            serial.write(&[wr_ptr[x]]);
+                            serial.write("\n".as_bytes());
+    
+                        } else if x == 1 {
+                            serial.write("\n".as_bytes());
+                            serial.write("1 HIT".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("Input VAL: ".as_bytes());
+                            serial.write(&[wr_ptr[x]]);
+                            serial.write("\n".as_bytes());
+                        }
+                        else if x == 2 {
+                            serial.write("\n".as_bytes());
+                            serial.write("2 HIT".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("Input VAL: ".as_bytes());
+                            serial.write(&[wr_ptr[x]]);
+                            serial.write("\n".as_bytes());
+                        }
+                        else if x == 3 {
+                            serial.write("\n".as_bytes());
+                            serial.write("3 HIT".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("Input VAL: ".as_bytes());
+                            serial.write(&[wr_ptr[x]]);
+                            serial.write("\n".as_bytes());
+                        }
+                        else if x == 4 {
+                            serial.write("\n".as_bytes());
+                            serial.write("4 HIT".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("Input VAL: ".as_bytes());
+                            serial.write(&[wr_ptr[x]]);
+                            serial.write("\n".as_bytes());
+                        }
+                        else if x == 5 {
+                            serial.write("\n".as_bytes());
+                            serial.write("5 HIT".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("Input VAL: ".as_bytes());
+                            serial.write(&[wr_ptr[x]]);
+                            serial.write("\n".as_bytes());
+                        }
+                        else if x == 6 {
+                            serial.write("\n".as_bytes());
+                            serial.write("6 HIT".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("Input VAL: ".as_bytes());
+                            serial.write(&[wr_ptr[x]]);
+                            serial.write("\n".as_bytes());
+                        }
+                        else if x == 7 {
+                            serial.write("\n".as_bytes());
+                            serial.write("7 HIT".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("\n".as_bytes());
+                            serial.write("Input VAL: ".as_bytes());
+                            serial.write(&[wr_ptr[x]]);
+                            serial.write("\n".as_bytes());
+                        }
+                        //serial.write("\n".as_bytes());
+                        //serial.write("Input VAL: ".as_bytes());
+                        //serial.write(&[wr_ptr[x]]);
+                        //serial.write("\n".as_bytes());
 
                         serial.write("\n".as_bytes());
                         serial.write("Input IDX: ".as_bytes());
-                        serial.write(&[count[x]]);
+                        serial.write(&[x as u8]);
                         serial.write("\n".as_bytes());
 
                         //let val = ascii_decode_base_10(wr_ptr[x]);
@@ -201,7 +292,7 @@ fn main() -> ! {
                             serial.write("\n".as_bytes());
                             continue;
                         };
-                        match count[x] {
+                        match x {
                             0 => {
                                 cmd.start_bit[0] = val; 
                             },
@@ -264,8 +355,9 @@ fn main() -> ! {
                             },
                             _ => ()
                         }
+                        }
                     }
-                    /*
+                    ///*
                     //serial.write(&[cmd.start_bit[0]].as_bytes());
                     serial.write(&[cmd.start_bit[0]]);
                     serial.write("\n".as_bytes());
@@ -273,7 +365,7 @@ fn main() -> ! {
                     serial.write("\n".as_bytes());
                     serial.write(&[cmd.gpio_1_number[0], cmd.gpio_1_number[1]]);
                     serial.write("\n".as_bytes());
-                    serial.write(&[cmd.gpio_2_number[0], cmd.gpio_1_number[1]]);
+                    serial.write(&[cmd.gpio_2_number[0], cmd.gpio_2_number[1]]);
                     serial.write("\n".as_bytes());
                     serial.write(&[cmd.gpio_0_start_state[0]]);
                     serial.write("\n".as_bytes());
@@ -295,11 +387,11 @@ fn main() -> ! {
                     serial.write("\n".as_bytes());
                     serial.write(&[cmd.stop_bit[0]]);
                     serial.write("\n".as_bytes());
-                    */
-
-
+                    //*/
                 }
+                
             }
+            
         }
     }
 } 
