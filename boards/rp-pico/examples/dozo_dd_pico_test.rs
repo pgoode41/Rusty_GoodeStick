@@ -124,91 +124,20 @@ fn main() -> ! {
     let mut cycle_count = 0;
     let full_hit_string = "full_hit:";
     let single_hit_string = "single_hit:";
-    let nl: String<2> = String::from("\r");
-    let cycle_count_total = 2;
+    let nl: String<2> = String::from("\n");
+    let cycle_count_total = 10000;
     let hits_per_cycle_total = 1;
-    let hit_distance_adc_value = 700;
+    let hit_distance_adc_value = 876;
     let mut led_pin = pins.led.into_push_pull_output();
     let mut full_hit_count = 0;
 //#####################################################################################################################//
     loop {
 //#########################################################################//
-        if cycle_count >= cycle_count_total {
-            hit_count = 0;
-        }
+        //delay.delay_ms(500);
         let pin_adc_counts: u32 = adc.read(&mut adc_pin_0).unwrap();
         let data: String<4> = String::from(pin_adc_counts);
-
-        if hit_count >= hits_per_cycle_total && cycle_count <= cycle_count_total {
-            full_hit_count+=full_hit_count+1;
-            //continue;
-            if full_hit_count >= 0 {
-                cycle_count = 0;
-                serial.write(full_hit_string.as_bytes());
-                serial.write(data.as_bytes());
-                serial.write(nl.as_bytes());
-                hit_count = 0;
-                full_hit_count = 0;
-                led_pin.set_high().unwrap();
-                delay.delay_ms(500);
-                led_pin.set_low().unwrap();
-                delay.delay_ms(1);
-                continue;
-            } else {
-                hit_count = 0;
-            }
-        } else if pin_adc_counts >= hit_distance_adc_value {
-            serial.write(single_hit_string.as_bytes());
-            serial.write(data.as_bytes());
-            serial.write(nl.as_bytes());
-            hit_count+=hit_count+1;
-        }
-        cycle_count+=cycle_count+1;
-//#########################################################################//
-        // Check for new data
-        if usb_dev.poll(&mut [&mut serial]) {
-            let mut buf = [0u8; 64];
-            match serial.read(&mut buf) {
-                Err(_e) => {
-                    // Do nothing
-                }
-                Ok(0) => {
-                    // Do nothing
-                }
-                Ok(count) => {
-                    // Convert to upper case
-                    buf.iter_mut().take(count).for_each(|b| {
-                        b.make_ascii_uppercase();
-                    });
-                    // Send back to the host
-                    let mut wr_ptr = &buf[..count];
-                    while !wr_ptr.is_empty() {
-                        match serial.write(wr_ptr) {
-                            Ok(len) => wr_ptr = &wr_ptr[len..],
-                            // On error, just drop unwritten data.
-                            // One possible error is Err(WouldBlock), meaning the USB
-                            // write buffer is full.
-                            Err(_) => break,
-                        };
-                    }
-                }
-                /*Ok(count) => {
-                    // Convert to upper case
-                    buf.iter_mut().take(count).for_each(|b| {
-                        b.make_ascii_uppercase();
-                    });
-                    // Send back to the host
-                    let mut wr_ptr = &buf[..count];
-                    //let mut firs_char = buf[0] as char;
-                    //if firs_char  == 'S' {
-                    //    let data_string: String<4> = String::from("First Letter is S \n");
-                    //    serial.write(&[buf[0]]);
-                    //}
-                    serial.write(&[buf[0], buf[1]]);
-                    
-                }*/
-            }
-        }
+        serial.write(data.as_bytes());
+        serial.write(nl.as_bytes());
     }
 //#####################################################################################################################//
 }
