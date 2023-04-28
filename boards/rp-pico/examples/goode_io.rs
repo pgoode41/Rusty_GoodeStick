@@ -105,6 +105,14 @@ fn main() -> ! {
     let mut gpio_pin_15 = pins.gpio15.into_push_pull_output();
     let mut gpio_pin_16 = pins.gpio16.into_push_pull_output();
     let mut gpio_pin_17 = pins.gpio17.into_push_pull_output();
+    let mut gpio_pin_18 = pins.gpio18.into_push_pull_output();
+    let mut gpio_pin_19 = pins.gpio19.into_push_pull_output();
+    let mut gpio_pin_20 = pins.gpio20.into_push_pull_output();
+    let mut gpio_pin_21 = pins.gpio21.into_push_pull_output();
+    let mut gpio_pin_22 = pins.gpio22.into_push_pull_output();
+    let mut gpio_pin_26 = pins.gpio26.into_push_pull_output();
+    let mut gpio_pin_27 = pins.gpio27.into_push_pull_output();
+    let mut gpio_pin_28 = pins.gpio28.into_push_pull_output();
     loop {
         // Check for new data
         if usb_dev.poll(&mut [&mut serial]) {
@@ -128,66 +136,212 @@ fn main() -> ! {
                     let pin_6_state = u8::from_be_bytes([wr_ptr[7]].try_into().unwrap());
                     let pin_7_state = u8::from_be_bytes([wr_ptr[8]].try_into().unwrap());
                     let pin_8_state = u8::from_be_bytes([wr_ptr[9]].try_into().unwrap());
-                    let stop_bit = u8::from_be_bytes([wr_ptr[10]].try_into().unwrap());
+                    let pin_9_state = u8::from_be_bytes([wr_ptr[10]].try_into().unwrap());
+                    let pin_10_state = u8::from_be_bytes([wr_ptr[11]].try_into().unwrap());
+                    let pin_11_state = u8::from_be_bytes([wr_ptr[12]].try_into().unwrap());
+                    let pin_12_state = u8::from_be_bytes([wr_ptr[13]].try_into().unwrap());
+                    let pin_13_state = u8::from_be_bytes([wr_ptr[14]].try_into().unwrap());
+                    let pin_14_state = u8::from_be_bytes([wr_ptr[15]].try_into().unwrap());
+                    let pin_15_state = u8::from_be_bytes([wr_ptr[16]].try_into().unwrap());
+                    let pin_16_state = u8::from_be_bytes([wr_ptr[17]].try_into().unwrap());
+                    let pin_17_state = u8::from_be_bytes([wr_ptr[18]].try_into().unwrap());
+                    let pin_18_state = u8::from_be_bytes([wr_ptr[19]].try_into().unwrap());
+                    let pin_19_state = u8::from_be_bytes([wr_ptr[20]].try_into().unwrap());
+                    let pin_20_state = u8::from_be_bytes([wr_ptr[21]].try_into().unwrap());
+                    let pin_21_state = u8::from_be_bytes([wr_ptr[22]].try_into().unwrap());
+                    let pin_22_state = u8::from_be_bytes([wr_ptr[23]].try_into().unwrap());
+                    let pin_26_state = u8::from_be_bytes([wr_ptr[24]].try_into().unwrap());
+                    let pin_27_state = u8::from_be_bytes([wr_ptr[25]].try_into().unwrap());
+                    let pin_28_state = u8::from_be_bytes([wr_ptr[26]].try_into().unwrap());
+                    let stop_bit = u8::from_be_bytes([wr_ptr[27]].try_into().unwrap());
                     
                     while !wr_ptr.is_empty() {
                         serial.write(wr_ptr);
                         if start_bit == b'7' && stop_bit == b'7'{
-
+                            //####################################################################//
+                            //####################################################################//
                             if pin_0_state == b'0' {
                                 gpio_pin_0.set_low().unwrap();
                             } else if pin_0_state == b'1' {
                                 gpio_pin_0.set_high().unwrap();
                             }
-
+                            //####################################################################//
+                            //####################################################################//
                             if pin_1_state == b'0' {
                                 gpio_pin_1.set_low().unwrap();
                             } else if pin_1_state == b'1' {
                                 gpio_pin_1.set_high().unwrap();
                             }
-
+                            //####################################################################//
+                            //####################################################################//
                             if pin_2_state == b'0' {
                                 gpio_pin_2.set_low().unwrap();
                             } else if pin_2_state == b'1' {
                                 gpio_pin_2.set_high().unwrap();
                             }
-
+                            //####################################################################//
+                            //####################################################################//
                             if pin_3_state == b'0' {
                                 gpio_pin_3.set_low().unwrap();
                             } else if pin_3_state == b'1' {
                                 gpio_pin_3.set_high().unwrap();
                             }
-
+                            //####################################################################//
+                            //####################################################################//
                             if pin_4_state == b'0' {
                                 gpio_pin_4.set_low().unwrap();
                             } else if pin_4_state == b'1' {
                                 gpio_pin_4.set_high().unwrap();
                             }
-
+                            //####################################################################//
+                            //####################################################################//
                             if pin_5_state == b'0' {
                                 gpio_pin_5.set_low().unwrap();
                             } else if pin_5_state == b'1' {
                                 gpio_pin_5.set_high().unwrap();
                             }
-
+                            //####################################################################//
+                            //####################################################################//
                             if pin_6_state == b'0' {
                                 gpio_pin_6.set_low().unwrap();
                             } else if pin_6_state == b'1' {
                                 gpio_pin_6.set_high().unwrap();
                             }
-
+                            //####################################################################//
+                            //####################################################################//
                             if pin_7_state == b'0' {
                                 gpio_pin_7.set_low().unwrap();
                             } else if pin_7_state == b'1' {
                                 gpio_pin_7.set_high().unwrap();
                             }
-
+                            //####################################################################//
+                            //####################################################################//
                             if pin_8_state == b'0' {
                                 gpio_pin_8.set_low().unwrap();
                             } else if pin_8_state == b'1' {
                                 gpio_pin_8.set_high().unwrap();
                             }
-                            
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_9_state == b'0' {
+                                gpio_pin_9.set_low().unwrap();
+                            } else if pin_9_state == b'1' {
+                                gpio_pin_9.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_10_state == b'0' {
+                                gpio_pin_10.set_low().unwrap();
+                            } else if pin_10_state == b'1' {
+                                gpio_pin_10.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_11_state == b'0' {
+                                gpio_pin_11.set_low().unwrap();
+                            } else if pin_11_state == b'1' {
+                                gpio_pin_11.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_12_state == b'0' {
+                                gpio_pin_12.set_low().unwrap();
+                            } else if pin_12_state == b'1' {
+                                gpio_pin_12.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_13_state == b'0' {
+                                gpio_pin_13.set_low().unwrap();
+                            } else if pin_13_state == b'1' {
+                                gpio_pin_13.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_14_state == b'0' {
+                                gpio_pin_14.set_low().unwrap();
+                            } else if pin_14_state == b'1' {
+                                gpio_pin_14.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_15_state == b'0' {
+                                gpio_pin_15.set_low().unwrap();
+                            } else if pin_15_state == b'1' {
+                                gpio_pin_15.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_16_state == b'0' {
+                                gpio_pin_16.set_low().unwrap();
+                            } else if pin_16_state == b'1' {
+                                gpio_pin_16.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_17_state == b'0' {
+                                gpio_pin_17.set_low().unwrap();
+                            } else if pin_17_state == b'1' {
+                                gpio_pin_17.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_18_state == b'0' {
+                                gpio_pin_18.set_low().unwrap();
+                            } else if pin_18_state == b'1' {
+                                gpio_pin_18.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_19_state == b'0' {
+                                gpio_pin_19.set_low().unwrap();
+                            } else if pin_19_state == b'1' {
+                                gpio_pin_19.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_20_state == b'0' {
+                                gpio_pin_20.set_low().unwrap();
+                            } else if pin_20_state == b'1' {
+                                gpio_pin_20.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_21_state == b'0' {
+                                gpio_pin_21.set_low().unwrap();
+                            } else if pin_21_state == b'1' {
+                                gpio_pin_21.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_22_state == b'0' {
+                                gpio_pin_22.set_low().unwrap();
+                            } else if pin_22_state == b'1' {
+                                gpio_pin_22.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_26_state == b'0' {
+                                gpio_pin_26.set_low().unwrap();
+                            } else if pin_26_state == b'1' {
+                                gpio_pin_26.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_27_state == b'0' {
+                                gpio_pin_27.set_low().unwrap();
+                            } else if pin_27_state == b'1' {
+                                gpio_pin_27.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
+                            if pin_28_state == b'0' {
+                                gpio_pin_28.set_low().unwrap();
+                            } else if pin_28_state == b'1' {
+                                gpio_pin_28.set_high().unwrap();
+                            }
+                            //####################################################################//
+                            //####################################################################//
                             break
                         } else {
                             serial.flush();
