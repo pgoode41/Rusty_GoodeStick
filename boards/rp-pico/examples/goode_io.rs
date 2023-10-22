@@ -80,9 +80,9 @@ fn main() -> ! {
 
     // Create a USB device with a fake VID and PID
     let mut usb_dev = UsbDeviceBuilder::new(&usb_bus, UsbVidPid(0x16c0, 0x27dd))
-        .manufacturer("Fake company")
-        .product("Serial port")
-        .serial_number("TEST")
+        .manufacturer("GoodeTech")
+        .product("PsyKyoI0X2")
+        .serial_number("PsyKyoI0X2")
         .device_class(2) // from: https://www.usb.org/defined-class-codes
         .build();
 
@@ -402,6 +402,7 @@ fn main() -> ! {
                             //####################################################################//
                             serial.write("7".as_bytes());
                             break
+                            //continue;
                         } else {
                             serial.flush();
                             reset_to_usb_boot(0,0);
